@@ -105,7 +105,23 @@ class SandboxSimulator:
                 continue
 
             # Get predictions for this day
-            predictions = list(get_latest_predictions(self.db, current_day))
+            from src.prediction.engine import PredictionResult
+            db_preds = get_latest_predictions(self.db, current_day)
+            predictions = []
+            for p in db_preds:
+                predictions.append(PredictionResult(
+                    stock_id=p.stock_id,
+                    stock_symbol=p.stock.symbol,
+                    date=p.date,
+                    up_probability=p.up_probability,
+                    down_probability=p.down_probability,
+                    expected_move_pct=p.expected_move_pct,
+                    confidence=p.confidence,
+                    suggested_action=p.suggested_action,
+                    suggested_position_pct=p.suggested_position_pct or 0.0,
+                    component_scores=p.component_scores_json or {},
+                    reasoning=p.reasoning or ""
+                ))
 
             # Each agent makes decisions and executes trades
             for agent_name, (strategy, exchange) in agents.items():
