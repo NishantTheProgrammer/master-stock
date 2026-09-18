@@ -76,6 +76,7 @@ class BaseAgent(ABC):
                 )
             except Exception as e:
                 self.logger.error(f"  {stock.symbol}: Failed — {e}")
+                self.db.rollback()
                 # Create a neutral fallback score
                 scores.append(AgentScore(
                     stock_id=stock.id,

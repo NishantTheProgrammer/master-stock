@@ -52,25 +52,36 @@ def fetch_prices(req: FetchPricesRequest):
     finally:
         db.close()
 
-@router.post("/run-agents")
-def run_agents():
-    """Run all AI agents and generate predictions."""
-    try:
-        from scripts.run_agents import main as agents_main
-        agents_main()
-        return {"status": "success", "message": "AI Agents finished running and predictions generated."}
-    except Exception as e:
-        logger.error(f"Error running agents: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+from fastapi.responses import StreamingResponse
+import subprocess
 
-@router.post("/sandbox")
-def run_sandbox(req: SandboxRequest):
-    """Run the paper trading sandbox."""
-    try:
-        from scripts.run_sandbox import main as sandbox_main
-        args = DummyArgs(days=req.days, capital=req.capital)
-        sandbox_main(args)
-        return {"status": "success", "message": f"Sandbox simulation completed for {req.days} days."}
-    except Exception as e:
-        logger.error(f"Error running sandbox: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+def run_script_stream(cmd: list[str]):
+    """Run a script and yield its output as Server-Sent Events."""
+    process = subprocess.Popen(
+        cmd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        bufsize=1,  # Line buffered
+    )
+    
+    for line in iter(process.stdout.readline, ""):
+        if line:
+            # SSE format
+            yield f"data: {line.strip()}\n\n"
+            
+    process.stdout.close()
+    process.wait()
+    yield "data: [DONE]\n\n"
+
+@router.get("/run-agents/stream")
+def run_agents_stream():
+    """Stream logs of AI agents running."""
+    cmd = ["python", "-u", "-m", "scripts.run_agents"]
+    return StreamingResponse(run_script_stream(cmd), media_type="text/event-stream")
+
+@router.get("/sandbox/stream")
+def run_sandbox_stream(days: int = 10, capital: float = 1000000.0):
+    """Stream logs of the paper trading sandbox."""
+    cmd = ["python", "-u", "-m", "scripts.run_sandbox", "--days", str(days), "--capital", str(capital)]
+    return StreamingResponse(run_script_stream(cmd), media_type="text/event-stream")
