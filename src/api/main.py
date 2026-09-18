@@ -9,11 +9,10 @@ from datetime import date
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.api.routes import predictions, sandbox, scores, stocks
+from src.api.routes import predictions, sandbox, scores, stocks, system
 from src.config import settings
 
 logger = logging.getLogger(__name__)
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -21,7 +20,6 @@ async def lifespan(app: FastAPI):
     logger.info("🚀 Master Stock API starting up...")
     yield
     logger.info("Master Stock API shutting down.")
-
 
 app = FastAPI(
     title="Master Stock API",
@@ -40,6 +38,7 @@ app.add_middleware(
 )
 
 # Register routes
+app.include_router(system.router, prefix="/api/system", tags=["System"])
 app.include_router(stocks.router, prefix="/api/stocks", tags=["Stocks"])
 app.include_router(scores.router, prefix="/api/scores", tags=["Scores"])
 app.include_router(predictions.router, prefix="/api/predictions", tags=["Predictions"])

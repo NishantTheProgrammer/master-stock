@@ -1,6 +1,7 @@
 import { fetchSandboxAgents, fetchLatestPredictions } from "@/lib/api";
 import { TrendingUp, Activity, Award, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import ControlPanel from "@/components/ControlPanel";
 
 export default async function Home() {
   let agents = [];
@@ -21,6 +22,8 @@ export default async function Home() {
     <div className="animate-fade-in">
       <h1 className="text-gradient mb-8" style={{ fontSize: '36px' }}>Dashboard Overview</h1>
       
+      <ControlPanel />
+
       {error && (
         <div className="glass-card mb-8" style={{ borderLeft: '4px solid var(--danger)' }}>
           <p className="text-danger">{error}</p>

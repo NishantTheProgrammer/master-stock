@@ -73,6 +73,20 @@ export default async function PredictionsPage() {
                 </div>
               </div>
               
+              <div className="mt-4 z-10" style={{ borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>
+                <span className="text-muted mb-2 block" style={{ fontSize: '12px', textTransform: 'uppercase' }}>Score Breakdown</span>
+                <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(2, 1fr)', fontSize: '12px' }}>
+                  {Object.entries(pred.component_scores_json || {}).map(([key, value]: [string, any]) => (
+                    <div key={key} className="flex justify-between items-center bg-black/20 p-2 rounded">
+                      <span className="text-muted capitalize" style={{ fontSize: '10px' }}>{key.replace('_', ' ')}</span>
+                      <span className={value > 0 ? "text-success" : value < 0 ? "text-danger" : "text-muted"} style={{ fontWeight: 600 }}>
+                        {value > 0 ? "+" : ""}{Number(value).toFixed(0)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
               <div className="mt-4 p-4 z-10" style={{ background: 'rgba(0,0,0,0.2)', borderRadius: '8px', fontSize: '14px' }}>
                 <span className="text-muted">AI Reasoning:</span> {pred.reasoning}
               </div>
