@@ -41,3 +41,5 @@ dashboard/out/
 # Model cache
 models/
 .cache/
+
+postgres_data/

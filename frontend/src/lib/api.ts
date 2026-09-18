@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = process.env.API_BASE_URL || 'http://localhost:8000/api';
 
 export async function fetchStocks() {
   const res = await fetch(`${API_BASE}/stocks`, { cache: 'no-store' });
