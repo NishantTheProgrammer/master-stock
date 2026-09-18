@@ -71,7 +71,7 @@ def cmd_predict(args):
 def cmd_sandbox(args):
     """Run the paper trading sandbox."""
     from scripts.run_sandbox import main as sandbox_main
-    sandbox_main()
+    sandbox_main(args)
 
 
 def cmd_serve(args):
@@ -110,7 +110,9 @@ def main():
     subparsers.add_parser("predict", help="Run the prediction engine")
 
     # sandbox
-    subparsers.add_parser("sandbox", help="Run paper trading sandbox")
+    sandbox_parser = subparsers.add_parser("sandbox", help="Run paper trading sandbox")
+    sandbox_parser.add_argument("--days", type=int, default=10, help="Number of days to simulate")
+    sandbox_parser.add_argument("--capital", type=float, default=1000000, help="Initial capital per agent")
 
     # serve
     subparsers.add_parser("serve", help="Start the API server")

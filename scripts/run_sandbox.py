@@ -21,11 +21,12 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(
 console = Console()
 
 
-def main():
-    parser = ArgumentParser(description="Run paper trading sandbox")
-    parser.add_argument("--days", type=int, default=10, help="Number of days to simulate")
-    parser.add_argument("--capital", type=float, default=1_000_000, help="Initial capital per agent")
-    args = parser.parse_args()
+def main(args=None):
+    if args is None:
+        parser = ArgumentParser(description="Run paper trading sandbox")
+        parser.add_argument("--days", type=int, default=10, help="Number of days to simulate")
+        parser.add_argument("--capital", type=float, default=1_000_000, help="Initial capital per agent")
+        args = parser.parse_args()
 
     end_date = date.today()
     start_date = end_date - timedelta(days=args.days + 5)  # Extra buffer for weekends
