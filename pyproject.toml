@@ -1,0 +1,64 @@
+[project]
+name = "master-stock"
+version = "0.1.0"
+description = "Agentic AI Stock Market Prediction System for Indian Markets (NSE/BSE)"
+readme = "README.md"
+requires-python = ">=3.12"
+
+dependencies = [
+    # Database
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "psycopg2-binary>=2.9",
+
+    # Data & Finance
+    "yfinance>=0.2",
+    "pandas>=2.2",
+    "numpy>=2.0",
+    "ta>=0.11",
+
+    # LLM & AI
+    "langchain>=0.3",
+    "langchain-ollama>=0.3",
+    "langgraph>=0.2",
+    "transformers>=4.44",
+    "torch>=2.4",
+
+    # News & Social APIs
+    "finnhub-python>=2.4",
+    "httpx>=0.27",
+
+    # API Server
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+
+    # Scheduling
+    "apscheduler>=3.10",
+
+    # Utils
+    "python-dotenv>=1.0",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.5",
+    "rich>=13.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.7",
+]
+
+[project.scripts]
+master-stock = "src.cli:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

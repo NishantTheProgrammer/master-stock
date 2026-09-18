@@ -1,0 +1,1 @@
+# master-stock source package
