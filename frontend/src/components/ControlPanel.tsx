@@ -36,28 +36,65 @@ function TerminalPopup({ endpoint, onClose }: { endpoint: string, onClose: () =>
   }, [logs]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="w-full max-w-4xl bg-[#0d1117] border border-[#30363d] rounded-xl shadow-2xl flex flex-col overflow-hidden animate-fade-in" style={{ height: "80vh" }}>
+    <div style={{
+      position: 'fixed',
+      top: 0, left: 0, right: 0, bottom: 0,
+      zIndex: 9999,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      backdropFilter: 'blur(4px)',
+      padding: '20px'
+    }}>
+      <div className="animate-fade-in" style={{
+        width: '100%',
+        maxWidth: '900px',
+        height: '80vh',
+        backgroundColor: '#0d1117',
+        border: '1px solid #30363d',
+        borderRadius: '12px',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden'
+      }}>
         {/* Terminal Header */}
-        <div className="bg-[#161b22] px-4 py-3 border-b border-[#30363d] flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <TerminalSquare size={18} className="text-muted" />
-            <span className="font-mono text-sm text-gray-300">Terminal — {endpoint}</span>
+        <div style={{
+          backgroundColor: '#161b22',
+          padding: '12px 16px',
+          borderBottom: '1px solid #30363d',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <TerminalSquare size={18} color="#8b949e" />
+            <span style={{ fontFamily: 'monospace', fontSize: '14px', color: '#8b949e' }}>Terminal — {endpoint}</span>
           </div>
           {isDone ? (
-            <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+            <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer' }}>
               <X size={20} />
             </button>
           ) : (
-            <div className="flex items-center gap-2 text-xs text-primary">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#3b82f6' }}>
               <Loader2 size={12} className="animate-spin" /> Running...
             </div>
           )}
         </div>
         
         {/* Terminal Body */}
-        <div className="flex-1 overflow-y-auto p-4 bg-[#0d1117] font-mono text-sm leading-relaxed" style={{ color: "#c9d1d9" }}>
-          <pre className="whitespace-pre-wrap font-mono m-0" style={{ fontSize: "13px" }}>
+        <div style={{
+          flex: 1,
+          overflowY: 'auto',
+          padding: '16px',
+          backgroundColor: '#0d1117',
+          color: '#c9d1d9',
+          fontFamily: 'monospace',
+          fontSize: '13px',
+          lineHeight: '1.6'
+        }}>
+          <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
             {logs}
           </pre>
           <div ref={bottomRef} />
@@ -65,10 +102,25 @@ function TerminalPopup({ endpoint, onClose }: { endpoint: string, onClose: () =>
         
         {/* Terminal Footer */}
         {isDone && (
-          <div className="bg-[#161b22] px-4 py-3 border-t border-[#30363d] flex justify-end">
+          <div style={{
+            backgroundColor: '#161b22',
+            padding: '12px 16px',
+            borderTop: '1px solid #30363d',
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }}>
             <button 
               onClick={onClose}
-              className="px-4 py-2 bg-primary text-white rounded text-sm hover:opacity-90 transition-opacity"
+              style={{
+                padding: '8px 16px',
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                fontWeight: 500
+              }}
             >
               Close Window
             </button>

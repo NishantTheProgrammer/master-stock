@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Link from "next/link";
-import { LayoutDashboard, LineChart, BarChart3, Activity } from "lucide-react";
+import { LayoutDashboard, LineChart, BarChart3, Activity, Settings } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Master Stock - Agentic AI",
@@ -39,6 +39,10 @@ export default function RootLayout({
               <Link href="/sandbox" className="nav-item">
                 <BarChart3 size={20} />
                 <span>Sandbox</span>
+              </Link>
+              <Link href="/system" className="nav-item">
+                <Settings size={20} />
+                <span>System</span>
               </Link>
             </nav>
           </aside>
