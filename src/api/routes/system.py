@@ -65,14 +65,25 @@ def run_script_stream(cmd: list[str]):
         bufsize=1,  # Line buffered
     )
     
-    for line in iter(process.stdout.readline, ""):
-        if line:
-            # SSE format
-            yield f"data: {line.strip()}\n\n"
-            
-    process.stdout.close()
-    process.wait()
-    yield "data: [DONE]\n\n"
+    try:
+        for line in iter(process.stdout.readline, ""):
+            if line:
+                # SSE format
+                yield f"data: {line.strip()}\n\n"
+                
+        process.stdout.close()
+        process.wait()
+        yield "data: [DONE]\n\n"
+    except GeneratorExit:
+        # Client disconnected, kill the process!
+        process.kill()
+        raise
+
+@router.get("/fetch-prices/stream")
+def fetch_prices_stream(days: int = 365):
+    """Stream logs of fetching prices."""
+    cmd = ["python", "-u", "-m", "src.cli", "fetch-prices", "--days", str(days)]
+    return StreamingResponse(run_script_stream(cmd), media_type="text/event-stream")
 
 @router.get("/run-agents/stream")
 def run_agents_stream():

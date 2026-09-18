@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Database, TrendingUp, Cpu, Play, Loader2, CheckCircle2, AlertCircle, TerminalSquare, X } from "lucide-react";
+import { Database, TrendingUp, Cpu, Play, Loader2, CheckCircle2, AlertCircle, TerminalSquare, X, Square } from "lucide-react";
 
 function TerminalPopup({ endpoint, onClose }: { endpoint: string, onClose: () => void }) {
   const [logs, setLogs] = useState<string>("");
@@ -39,46 +39,99 @@ function TerminalPopup({ endpoint, onClose }: { endpoint: string, onClose: () =>
     <div style={{
       position: 'fixed',
       top: 0, left: 0, right: 0, bottom: 0,
-      zIndex: 9999,
+      zIndex: 999999, // Super high z-index to stay above everything
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      backdropFilter: 'blur(4px)',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+      backdropFilter: 'blur(8px)',
       padding: '20px'
     }}>
       <div className="animate-fade-in" style={{
         width: '100%',
-        maxWidth: '900px',
-        height: '80vh',
+        maxWidth: '1000px',
+        maxHeight: '90vh',
         backgroundColor: '#0d1117',
         border: '1px solid #30363d',
         borderRadius: '12px',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
         display: 'flex',
         flexDirection: 'column',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        position: 'relative'
       }}>
+        {/* Animated Progress Bar (when running) */}
+        {!isDone && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '2px',
+            width: '100%',
+            background: 'rgba(255,255,255,0.1)',
+            overflow: 'hidden',
+            zIndex: 10
+          }}>
+            <div style={{
+              height: '100%',
+              width: '30%',
+              background: '#3b82f6',
+              boxShadow: '0 0 10px #3b82f6, 0 0 5px #3b82f6',
+              animation: 'indeterminate 1.5s infinite linear'
+            }} />
+          </div>
+        )}
+        <style dangerouslySetInnerHTML={{__html: `
+          @keyframes indeterminate {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(400%); }
+          }
+        `}} />
+
         {/* Terminal Header */}
         <div style={{
           backgroundColor: '#161b22',
-          padding: '12px 16px',
+          padding: '16px 20px',
           borderBottom: '1px solid #30363d',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center'
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <TerminalSquare size={18} color="#8b949e" />
-            <span style={{ fontFamily: 'monospace', fontSize: '14px', color: '#8b949e' }}>Terminal — {endpoint}</span>
+            <TerminalSquare size={20} color="#8b949e" />
+            <span style={{ fontFamily: 'monospace', fontSize: '15px', color: '#8b949e', fontWeight: 600 }}>Terminal — {endpoint.split('?')[0]}</span>
           </div>
+          
           {isDone ? (
-            <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer' }}>
-              <X size={20} />
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <span style={{ color: '#10b981', fontSize: '13px', fontWeight: 500 }}>Completed</span>
+              <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#8b949e', cursor: 'pointer' }}>
+                <X size={24} />
+              </button>
+            </div>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#3b82f6' }}>
-              <Loader2 size={12} className="animate-spin" /> Running...
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#3b82f6' }}>
+                <Loader2 size={14} className="animate-spin" /> Running...
+              </div>
+              <button 
+                onClick={onClose}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  color: '#ef4444',
+                  padding: '4px 12px',
+                  borderRadius: '6px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  fontWeight: 600
+                }}
+              >
+                <Square size={10} fill="currentColor" /> Cancel
+              </button>
             </div>
           )}
         </div>
@@ -87,11 +140,11 @@ function TerminalPopup({ endpoint, onClose }: { endpoint: string, onClose: () =>
         <div style={{
           flex: 1,
           overflowY: 'auto',
-          padding: '16px',
+          padding: '20px',
           backgroundColor: '#0d1117',
           color: '#c9d1d9',
           fontFamily: 'monospace',
-          fontSize: '13px',
+          fontSize: '14px',
           lineHeight: '1.6'
         }}>
           <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
@@ -104,7 +157,7 @@ function TerminalPopup({ endpoint, onClose }: { endpoint: string, onClose: () =>
         {isDone && (
           <div style={{
             backgroundColor: '#161b22',
-            padding: '12px 16px',
+            padding: '16px 20px',
             borderTop: '1px solid #30363d',
             display: 'flex',
             justifyContent: 'flex-end'
@@ -112,14 +165,15 @@ function TerminalPopup({ endpoint, onClose }: { endpoint: string, onClose: () =>
             <button 
               onClick={onClose}
               style={{
-                padding: '8px 16px',
+                padding: '10px 24px',
                 backgroundColor: '#3b82f6',
                 color: 'white',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '8px',
                 fontSize: '14px',
                 cursor: 'pointer',
-                fontWeight: 500
+                fontWeight: 600,
+                boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)'
               }}
             >
               Close Window
@@ -235,11 +289,10 @@ export default function ControlPanel() {
             <button 
               className="w-full flex justify-center items-center gap-2 py-3 px-4 rounded-lg text-black font-medium transition-all"
               style={{ background: "rgba(234,179,8,0.9)", boxShadow: "0 4px 14px 0 rgba(234,179,8,0.39)" }}
-              disabled={!!loading}
-              onClick={() => triggerPostTask("fetch", "fetch-prices", { days, full: false })}
+              onClick={() => openStream(`fetch-prices/stream?days=${days}`)}
             >
-              {loading === "fetch" ? <Loader2 size={18} className="animate-spin" /> : <Play size={18} />}
-              Fetch Data
+              <TerminalSquare size={18} />
+              Start & Stream Logs
             </button>
           </div>
 
