@@ -39,10 +39,10 @@ The entire project is Dockerized for easy setup.
 *   [Finnhub API Key](https://finnhub.io/register) (Free tier)
 
 ### 1. Setup Environment Variables
-Copy the template and add your Finnhub API key:
+Copy the template and add your API keys:
 ```bash
 cp .env.example .env
-# Edit .env and add FINNHUB_API_KEY
+# Edit .env and add FINNHUB_API_KEY and ALPHA_VANTAGE_API_KEY
 ```
 
 *Note: The Docker containers are configured to automatically connect to Ollama running natively on your machine via `host.docker.internal`.*
@@ -54,26 +54,15 @@ docker compose up -d --build
 ```
 *(PostgreSQL data is automatically persisted to `./postgres_data/` in your project folder).*
 
-### 3. Initialize & Run Agents
-The first time you start the project, the database will be empty. Run the following commands inside the backend container to seed data and trigger the AI agents:
-
-```bash
-# Seed initial stocks
-docker exec -it master-stock-backend python -m src.cli seed
-
-# Fetch 1 year of price history
-docker exec -it master-stock-backend python -m src.cli fetch-prices
-
-# Run the 5 AI Agents to generate predictions
-docker exec -it master-stock-backend python -m src.cli run-agents
-
-# Run the Sandbox simulation to track strategy performance
-docker exec -it master-stock-backend python -m src.cli sandbox --days 10
-```
-
-### 4. View the Dashboard
+### 3. Initialize & Run from the Dashboard
 Open your browser and navigate to:
 **[http://localhost:3000](http://localhost:3000)**
+
+At the top of the dashboard, you will find the **System Controls** panel. Click the buttons in this order:
+1. **Initialize DB**: Seeds the database with the Nifty Top 20 stocks.
+2. **Fetch Data**: Downloads historical price data (default 365 days) for the stocks.
+3. **Run Predictions**: Executes the AI Agents to generate market predictions.
+4. **Simulate**: Runs the Sandbox paper trading simulation to see how strategies perform.
 
 ---
 
