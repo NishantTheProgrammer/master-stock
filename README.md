@@ -1,37 +1,83 @@
-# Agentic AI Stock Market Prediction System
+# Master Stock — Agentic AI Stock Market Prediction System
 
-Goal: Build an agentic AI system to analyse 100 stocks and generate probabilistic buy/sell signals.
+A full-stack, AI-powered system designed to analyze the Indian stock market (NSE/BSE), generate probabilistic buy/sell signals, and test strategies in a paper trading sandbox. 
 
-## Agents
+## Features
 
-Technical Agent — analyses price patterns and indicators.
+### 🤖 5 Specialized AI Agents
+*   **Technical Agent:** Computes pure mathematical indicators (RSI, MACD, Bollinger Bands, Crossovers).
+*   **Global News Agent:** Uses **FinBERT** and **Ollama (Llama 3.1)** to assess overall market sentiment.
+*   **Sector News Agent:** Analyzes industry trends and caches scores for sector-wide efficiency.
+*   **Stock News Agent:** Scores company-specific catalysts, earnings, and events.
+*   **Social Agent:** Tracks retail sentiment via Stocktwits, weighting posts by author influence.
 
-Global News Agent — analyses overall market news and sentiment.
+### 🎯 Prediction Engine
+Aggregates all 5 agent signals using weighted sigmoid functions to estimate:
+*   P(Stock Up) & P(Stock Down)
+*   Expected % Move
+*   Confidence & Suggested Position Size
 
-Sector News Agent — analyses sector-specific news and trends.
+### 🏦 Paper Trading Sandbox
+A virtual trading environment containing multiple independent strategy agents:
+*   **Momentum Strategy** (Aggressive trend rider)
+*   **Contrarian Strategy** (Mean reversion, buys fear)
+*   **Balanced Strategy** (Moderate conviction, 20% cash reserve)
+*   **Conservative Strategy** (High conviction only, tight stop-losses)
 
-Stock News Agent — analyses company-specific news.
+### 📊 Next.js Dashboard
+A premium, dark-mode web UI with dynamic gauges, performance leaderboards, and real-time prediction tracking.
 
-Social Agent — analyses posts from politicians, policymakers, CEOs and influential investors.
+---
 
-All agents store structured scores and signals in a database.
+## Getting Started (Docker Installation)
 
-## Prediction Engine
+The entire project is Dockerized for easy setup.
 
-Combines all signals to estimate:
+### Prerequisites
+*   [Docker](https://docs.docker.com/get-docker/) & Docker Compose
+*   [Ollama](https://ollama.com/) (Running on your local host machine)
+*   [Finnhub API Key](https://finnhub.io/register) (Free tier)
 
-P(Stock Up)  
-P(Stock Down)  
-Expected % Move  
-Confidence  
-Suggested Position Size
+### 1. Setup Environment Variables
+Copy the template and add your Finnhub API key:
+```bash
+cp .env.example .env
+# Edit .env and add FINNHUB_API_KEY
+```
 
-## Paper Trading Sandbox
+*Note: The Docker containers are configured to automatically connect to Ollama running natively on your machine via `host.docker.internal`.*
 
-Create a virtual trading environment with fake money, orders, positions, fees and P&L.
+### 2. Start the Stack
+Spin up the Database, FastAPI Backend, and Next.js Frontend:
+```bash
+docker compose up -d --build
+```
+*(PostgreSQL data is automatically persisted to `./postgres_data/` in your project folder).*
 
-Run multiple trading agents with different strategies for 10+ days and compare their performance against the real market and simple benchmarks.
+### 3. Initialize & Run Agents
+The first time you start the project, the database will be empty. Run the following commands inside the backend container to seed data and trigger the AI agents:
 
-## Future
+```bash
+# Seed initial stocks
+docker exec -it master-stock-backend python -m src.cli seed
 
-Use historical backtesting and paper trading to evaluate whether the system produces reliable signals before considering real-money usage.
+# Fetch 1 year of price history
+docker exec -it master-stock-backend python -m src.cli fetch-prices
+
+# Run the 5 AI Agents to generate predictions
+docker exec -it master-stock-backend python -m src.cli run-agents
+
+# Run the Sandbox simulation to track strategy performance
+docker exec -it master-stock-backend python -m src.cli sandbox --days 10
+```
+
+### 4. View the Dashboard
+Open your browser and navigate to:
+**[http://localhost:3000](http://localhost:3000)**
+
+---
+
+## Future Roadmap
+- Use historical backtesting and paper trading to evaluate whether the system produces reliable signals before considering real-money usage.
+- Expand stock universe from Nifty Top 20 to 100+ stocks.
+- Support pluggable cloud LLMs (OpenAI/Anthropic).
